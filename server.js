@@ -25,13 +25,14 @@ mongoose.connect('mongodb://localhost/local', {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+// allows us to use css file
 app.use(express.static(path.join(__dirname, 'public')));
 
 // override with POST having ?_method=DELETE or ?_method=PUT
 app.use(methodOverride('_method'))
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

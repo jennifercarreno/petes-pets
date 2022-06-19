@@ -7,7 +7,7 @@ const multer  = require('multer');
 const upload = multer({ dest: 'uploads/' });
 var Upload = require('s3-uploader');
 // pets/avatar
-var client = new Upload('process.env.S3_BUCKET', {
+var client = new Upload(process.env.S3_BUCKET, {
   aws: {
     path: 'pets/avatar',
     region: process.env.S3_REGION,
@@ -41,26 +41,27 @@ module.exports = (app) => {
 
   // CREATE PET
   app.post('/pets', upload.single('avatar'), (req, res, next) => {
-    var pet = new Pet(req.body);
-    // console.log(req.file);
+    var pet = new Pet(req.body); // correctly gets info from form
+    // console.log(req.file); correctly gets file
 
     pet.save(function (err) {
       if (req.file) {
-        // Upload the images
-        console.log(pet)
 
+        // def uploads to uploads folder
         client.upload(req.file.path, {}, function (err, versions, meta) {
-          if (err) { return res.status(400).send({ err: err }) };
-
+          if (err) { return res.status(400).send({ err: err }) }; // ERROR HERE
+          
           // Pop off the -square and -standard and just use the one URL to grab the image
+          // works fine
           versions.forEach(function (image) {
             var urlArray = image.url.split('-');
             urlArray.pop();
             var url = urlArray.join('-');
             pet.avatarUrl = url;
             pet.save();
-          });
+            
 
+          });
           res.send({ pet: pet });
         });
       } else {
